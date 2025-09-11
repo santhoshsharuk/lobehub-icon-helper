@@ -41,45 +41,89 @@ const path = __importStar(require("path"));
 function activate(context) {
     console.log('🔹 LobeHub Icon Helper Activated');
     const disposable = vscode.commands.registerCommand('lobehubIcons.searchIcon', async () => {
-        // Ask user for icon name
-        const iconName = await vscode.window.showInputBox({
-            prompt: 'Enter LobeHub Icon Name (e.g., "home")'
+        const iconNamesInput = await vscode.window.showInputBox({
+            prompt: 'Enter icon names separated by commas (e.g., home,user,search)'
         });
-        if (!iconName)
+        if (!iconNamesInput)
             return;
-        const url = `https://unpkg.com/@lobehub/icons-static-svg@latest/icons/${iconName}.svg`;
-        try {
-            // Fetch icon
-            const res = await fetch(url);
-            if (!res.ok) {
-                vscode.window.showErrorMessage(`Icon '${iconName}' does NOT exist.`);
-                return;
-            }
-            const svgContent = await res.text();
-            // Show preview in Webview
-            const panel = vscode.window.createWebviewPanel('iconPreview', `Preview: ${iconName}`, vscode.ViewColumn.One, { enableScripts: true });
-            panel.webview.html = `<html><body style="display:flex;justify-content:center;align-items:center;height:100vh;">
-                ${svgContent}
-                </body></html>`;
-            // Ask user to save icon
-            const save = await vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: 'Save icon to workspace?' });
-            if (save === 'Yes') {
-                const workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-                if (!workspaceFolder) {
-                    vscode.window.showErrorMessage('Open a workspace folder first');
-                    return;
+        const iconNames = iconNamesInput.split(',').map(i => i.trim());
+        const iconContents = [];
+        for (const iconName of iconNames) {
+            const url = `https://unpkg.com/@lobehub/icons-static-svg@latest/icons/${iconName}.svg`;
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    vscode.window.showWarningMessage(`Icon '${iconName}' not found`);
+                    continue;
                 }
-                const iconsFolder = path.join(workspaceFolder, 'icons');
-                if (!fs.existsSync(iconsFolder))
-                    fs.mkdirSync(iconsFolder);
-                const filePath = path.join(iconsFolder, `${iconName}.svg`);
-                fs.writeFileSync(filePath, svgContent, 'utf-8');
-                vscode.window.showInformationMessage(`Icon saved to ${filePath}`);
+                const svgContent = await res.text();
+                iconContents.push({ name: iconName, svg: svgContent });
+            }
+            catch (err) {
+                vscode.window.showErrorMessage(`Failed to fetch icon '${iconName}': ${err}`);
             }
         }
-        catch (err) {
-            vscode.window.showErrorMessage('Failed to fetch icon: ' + err);
-        }
+        if (iconContents.length === 0)
+            return;
+        // Show Webview
+        const panel = vscode.window.createWebviewPanel('iconGallery', 'LobeHub Icon Gallery', vscode.ViewColumn.One, {
+            enableScripts: true,
+            retainContextWhenHidden: true
+        });
+        // Build gallery HTML
+        const galleryHtml = iconContents.map(icon => `
+            <div class="icon-container" draggable="true" data-name="${icon.name}">
+                ${icon.svg}
+                <p>${icon.name}</p>
+            </div>
+        `).join('');
+        panel.webview.html = `
+        <html>
+        <head>
+            <style>
+                body { display: flex; flex-wrap: wrap; gap: 20px; padding: 10px; }
+                .icon-container { width: 100px; cursor: grab; text-align: center; }
+                .icon-container svg { width: 80px; height: 80px; }
+            </style>
+        </head>
+        <body>
+            ${galleryHtml}
+            <script>
+                const vscode = acquireVsCodeApi();
+                document.querySelectorAll('.icon-container').forEach(el => {
+                    el.addEventListener('dragstart', (e) => {
+                        const name = el.getAttribute('data-name');
+                        const svg = el.querySelector('svg').outerHTML;
+                        // Send icon SVG to VS Code extension
+                        vscode.postMessage({ type: 'drag', name, svg });
+                        e.dataTransfer.setData('text/plain', svg);
+                    });
+                    el.addEventListener('dblclick', () => {
+                        vscode.postMessage({ type: 'save', name: el.getAttribute('data-name'), svg: el.querySelector('svg').outerHTML });
+                    });
+                });
+            </script>
+        </body>
+        </html>
+        `;
+        // Listen for messages from Webview
+        panel.webview.onDidReceiveMessage(msg => {
+            const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+            if (!workspaceFolder)
+                return;
+            const iconsFolder = path.join(workspaceFolder, 'icons');
+            if (!fs.existsSync(iconsFolder))
+                fs.mkdirSync(iconsFolder);
+            if (msg.type === 'save') {
+                const filePath = path.join(iconsFolder, `${msg.name}.svg`);
+                fs.writeFileSync(filePath, msg.svg, 'utf-8');
+                vscode.window.showInformationMessage(`Saved ${msg.name}.svg to ${iconsFolder}`);
+            }
+            else if (msg.type === 'drag') {
+                // Optional: could integrate more drag-drop logic if needed
+                console.log(`Dragged icon: ${msg.name}`);
+            }
+        });
     });
     context.subscriptions.push(disposable);
 }
