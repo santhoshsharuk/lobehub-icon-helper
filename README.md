@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./images/banner.png" width="200">
+  <img src="./images/banner.png" alt="LobeHub Icon Helper Banner" width="200">
   <h1>lobehub-icon-helper</h1>
   <p>Easily browse, search, and insert LobeHub icons into your projects without leaving the editor.</p>
 </div>
@@ -29,46 +29,46 @@
 **1. Why bother searching for icons online?**
 
 This extension brings the entire LobeHub icon library directly into your VS Code editor, streamlining your workflow.
+![VS Code Interface](./images/2.png)
 
 **2. Open Visual Studio Code**
 
 First, open your Visual Studio Code editor.
-![Open VS Code](./images/2.png)
+![VS Code Extensions Icon](./images/3.png)
 
 **3. Click on the Extensions icon**
 
 In the Activity Bar on the side of the window, click on the Extensions icon.
-![Extensions Icon](./images/3.png)
+![Searching for the extension](./images/4.png)
 
 **4. Search for `lobehub-icon-helper`**
 
 In the search bar of the Extensions view, type `lobehub-icon-helper` and press Enter.
-![Search for Extension](./images/4.png)
+![Installing the extension](./images/5.png)
 
 **5. Install the extension**
 
 Click the "Install" button to install the `lobehub-icon-helper` extension.
-![Install Extension](./images/5.png)
+![Opening the Command Palette](./images/6.png)
 
 **6. Open the Command Palette**
 
 Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) to open the Command Palette.
-![Open Command Palette](./images/6.png)
+![Searching for the LobeHub command](./images/7.png)
 
 **7. Search for "LobeHub"**
 
 In the Command Palette, type "LobeHub" to see the available commands for the extension and select the option to open the icon helper.
-![Search for LobeHub command](./images/7.png)
+![Typing the icon name](./images/8.png)
 
 **8. Type the icon name**
 
 Use the search bar within the extension's panel to find the icon you need by typing its name.
-![Type the icon name](./images/8.png)
+![Downloading the icon](./images/9.png)
 
 **9. Insert the icon**
 
 Double-click on the desired icon. The icon will be automatically downloaded and a new file will be created in an `icons` folder within your project's root directory.
-![Download the icon](./images/9.png)
 
 ---
 
@@ -105,6 +105,7 @@ This extension contributes the following settings:
 
 ## 📖 Resources
 
+*(You can add links to your GitHub repository, documentation, or other relevant resources here.)*
 
 ---
 
