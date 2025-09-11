@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./images/banner.png" alt="LobeHub Icon Helper Banner" width="200">
+  <img src="./images/banner.png" alt="LobeHub Icon Helper Banner" width="800">
   <h1>lobehub-icon-helper</h1>
   <p>Easily browse, search, and insert LobeHub icons into your projects without leaving the editor.</p>
 </div>
