@@ -3,18 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Meta & SEO from your provided file -->
+    <title>LobeHub Icon Helper - VS Code Extension</title>
     <meta name="description" content="LobeHub Icon Helper - VS Code extension for searching, previewing, and inserting LobeHub icons effortlessly">
     <meta name="keywords" content="VS Code, extension, icons, LobeHub, developer tools, SVG, React">
-    <title>LobeHub Icon Helper - VS Code Extension</title>
-    <link rel="stylesheet" href="styles.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dark-bg: #030413;
+            --primary-glow: #3b82f6;
+            --primary-glow-rgb: 59, 130, 246;
+            --secondary-glow: #8b5cf6;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: rgba(59, 130, 246, 0.2);
+            --card-bg: rgba(14, 18, 41, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- Animated Background --- */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 20% 20%, rgba(var(--primary-glow-rgb), 0.15) 0%, transparent 30%),
+                              radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 25%);
+            z-index: -1;
+            animation: moveBackground 20s linear infinite alternate;
+        }
+
+        @keyframes moveBackground {
+            from { transform: translate(0, 0); }
+            to { transform: translate(50px, -50px); }
+        }
+
+        /* --- General Styles --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 100px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            text-shadow: 0 0 15px rgba(var(--primary-glow-rgb), 0.3);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 80px; /* Space for nav */
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: #fff;
+            text-shadow: 0 0 25px rgba(var(--primary-glow-rgb), 0.5), 0 0 40px rgba(var(--primary-glow-rgb), 0.3);
+            perspective: 800px;
+            margin-bottom: 20px;
+        }
+
+        /* This is where the letter-fly-in animation is applied */
+        .hero-title span {
+            display: inline-block;
+            opacity: 0;
+            animation: flyIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            max-width: 650px;
+            margin: 20px auto 30px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            opacity: 0;
+            animation: fadeIn 1s ease 1.5s forwards;
+        }
+
+        .hero-ctas {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: fadeIn 1s ease 1.8s forwards;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-glow);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(var(--primary-glow-rgb), 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(var(--primary-glow-rgb), 0.8);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            transform: translateY(-3px);
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            opacity: 0;
+            animation: fadeIn 1s ease 2s forwards;
+        }
+        
+        .stat {
+            text-align: center;
+            border-right: 1px solid var(--border-color);
+            padding-right: 40px;
+        }
+        
+        .stat:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* --- Keyframes for Animations --- */
+        @keyframes flyIn {
+            from {
+                opacity: 0;
+                transform: translateY(100px) rotateX(-90deg) rotateY(20deg) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg) rotateY(0deg) scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- All Other Sections --- */
+        .problem-solution { background-color: rgba(0,0,0,0.2); }
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+
+        .problem h2, .solution h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(var(--primary-glow-rgb), 0.3);
+        }
+
+        .problem-list, .solution-list { list-style: none; }
+        .problem-list li, .solution-list li { margin-bottom: 15px; padding-left: 30px; position: relative; color: var(--text-muted); line-height: 1.6; }
+        .problem-list li::before { content: '❌'; position: absolute; left: 0; }
+        .solution-list li { color: var(--text-light); }
+        .solution-list li::before { content: ''; position: absolute; left: 0; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .feature-card { background-color: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; transition: transform 0.3s, box-shadow 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 20px rgba(var(--primary-glow-rgb), 0.3); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 20px; }
+        .feature-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
+        .feature-card p { color: var(--text-muted); line-height: 1.6; }
+
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; text-align: center; }
+        .step-number { width: 60px; height: 60px; line-height: 60px; border-radius: 50%; background: var(--primary-glow); margin: 0 auto 20px; font-size: 1.8rem; font-weight: 700; color: #fff; box-shadow: 0 0 20px rgba(var(--primary-glow-rgb), 0.6); }
+        .step h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        .step p { color: var(--text-muted); max-width: 300px; margin: 0 auto; }
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        .screenshot-placeholder { height: 300px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--text-muted); transition: all 0.3s ease; }
+        .screenshot-placeholder:hover { border-color: var(--primary-glow); color: var(--text-light); box-shadow: 0 0 20px rgba(var(--primary-glow-rgb), 0.3); }
+
+        .install-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 50px; }
+        .install-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px; border-radius: 10px; }
+        .install-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
+        .install-card p, .install-card ol { color: var(--text-muted); margin-bottom: 20px; }
+        .install-card ol { padding-left: 20px; } .install-card ol li { margin-bottom: 8px; }
+        code { display: block; background: #000; padding: 15px; border-radius: 5px; font-family: 'Courier New', Courier, monospace; color: #0f0; border: 1px solid rgba(0, 255, 0, 0.2); margin-bottom: 20px; white-space: nowrap; overflow-x: auto; }
+
+        .about-content, .roadmap-items { max-width: 800px; margin: 0 auto; }
+        .roadmap-item { background: var(--card-bg); padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary-glow); margin-bottom: 20px; }
+        .roadmap-status { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; }
+        .roadmap-status.planned { background-color: var(--primary-glow); color: #fff; }
+
+        .footer { background-color: #000; padding: 60px 0 20px 0; margin-top: 50px; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; }
+        .footer-section h4 { font-size: 1.2rem; margin-bottom: 15px; }
+        .footer-section p, .footer-section ul li { color: var(--text-muted); margin-bottom: 10px; }
+        .footer-section ul { list-style: none; }
+        .footer-section a { color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
+        .footer-section a:hover { color: var(--primary-glow); }
+        .footer-bottom { border-top: 1px solid var(--border-color); text-align: center; padding-top: 20px; font-size: 0.9rem; color: var(--text-muted); }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 3rem; }
+            .section-title { font-size: 2rem; }
+            .section-grid, .steps, .install-methods, .gallery-grid { grid-template-columns: 1fr; }
+            .hero-stats { flex-direction: column; gap: 20px; align-items: center; }
+            .stat { border-right: none; padding-right: 0; }
+        }
+
+    </style>
 </head>
 <body>
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="container">
-            <div class="hero-content">
+
+    <header>
+        <!-- The header/nav can be added here if desired -->
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container hero-content">
                 <h1 class="hero-title">
-                    <span class="gradient-text">LobeHub Icon Helper</span>
+                    <!-- JS will populate this -->
                 </h1>
                 <p class="hero-subtitle">
                     Search, preview, and insert LobeHub icons directly in VS Code without leaving your editor
@@ -38,194 +318,158 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </section>
 
-    <!-- Problem → Solution Section -->
-    <section class="problem-solution">
-        <div class="container">
-            <div class="section-grid">
-                <div class="problem">
-                    <h2>The Problem</h2>
-                    <ul class="problem-list">
-                        <li>Switching between VS Code and browsers to find icons</li>
-                        <li>Manual copying and pasting of SVG code</li>
-                        <li>No preview of icons before implementation</li>
-                        <li>Time-consuming icon integration workflow</li>
-                    </ul>
-                </div>
-                <div class="solution">
-                    <h2>Our Solution</h2>
-                    <ul class="solution-list">
-                        <li>✨ Search icons directly in VS Code</li>
-                        <li>🎨 Instant preview before insertion</li>
-                        <li>📋 One-click copy or direct insertion</li>
-                        <li>⚡ Seamless workflow integration</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Powerful Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🔍</div>
-                    <h3>Search Icons</h3>
-                    <p>Quickly find icons from the comprehensive LobeHub icon set with intelligent search capabilities.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📋</div>
-                    <h3>Copy/Insert Icons</h3>
-                    <p>Copy SVG code to clipboard or insert directly into your project with customizable formats.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Preview Support</h3>
-                    <p>Instantly preview icons before using them to ensure they fit your design perfectly.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Fast & Lightweight</h3>
-                    <p>Built for speed with minimal overhead, ensuring your VS Code remains responsive.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works Demo -->
-    <section class="how-it-works">
-        <div class="container">
-            <h2 class="section-title">How It Works</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Search</h3>
-                    <p>Open VS Code command palette and search for "Search LobeHub Icon"</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Browse</h3>
-                    <p>Enter icon names separated by commas to load and preview multiple icons</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Insert</h3>
-                    <p>Double-click to save icons or drag them directly into your code</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Screenshots/Preview Gallery -->
-    <section class="gallery">
-        <div class="container">
-            <h2 class="section-title">Extension in Action</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <div class="screenshot-placeholder">
-                        <span>Command Palette Integration</span>
+        <!-- Problem → Solution Section -->
+        <section class="problem-solution">
+            <div class="container">
+                <div class="section-grid">
+                    <div class="problem">
+                        <h2>The Problem</h2>
+                        <ul class="problem-list">
+                            <li>Switching between VS Code and browsers to find icons</li>
+                            <li>Manual copying and pasting of SVG code</li>
+                            <li>No preview of icons before implementation</li>
+                            <li>Time-consuming icon integration workflow</li>
+                        </ul>
                     </div>
-                </div>
-                <div class="gallery-item">
-                    <div class="screenshot-placeholder">
-                        <span>Icon Gallery View</span>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <div class="screenshot-placeholder">
-                        <span>Preview Panel</span>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <div class="screenshot-placeholder">
-                        <span>Direct Insertion</span>
+                    <div class="solution">
+                        <h2>Our Solution</h2>
+                        <ul class="solution-list">
+                            <li>✨ Search icons directly in VS Code</li>
+                            <li>🎨 Instant preview before insertion</li>
+                            <li>📋 One-click copy or direct insertion</li>
+                            <li>⚡️ Seamless workflow integration</li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Installation Instructions -->
-    <section id="installation" class="installation">
-        <div class="container">
-            <h2 class="section-title">Installation</h2>
-            <div class="install-methods">
-                <div class="install-card">
-                    <h3>VS Code Marketplace</h3>
-                    <p>Install directly from the VS Code Extensions view</p>
-                    <code>ext install santhoshsharuk.lobehub-icon-helper</code>
-                    <a href="vscode:extension/santhoshsharuk.lobehub-icon-helper" class="btn btn-primary">Install</a>
-                </div>
-                <div class="install-card">
-                    <h3>Manual Installation</h3>
-                    <p>Download and install the .vsix file manually</p>
-                    <ol>
-                        <li>Download the latest release</li>
-                        <li>Open VS Code</li>
-                        <li>Run "Extensions: Install from VSIX..."</li>
-                        <li>Select the downloaded file</li>
-                    </ol>
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <h2 class="section-title">Powerful Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Search Icons</h3>
+                        <p>Quickly find icons from the comprehensive LobeHub icon set with intelligent search capabilities.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>Copy/Insert Icons</h3>
+                        <p>Copy SVG code to clipboard or insert directly into your project with customizable formats.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Preview Support</h3>
+                        <p>Instantly preview icons before using them to ensure they fit your design perfectly.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡️</div>
+                        <h3>Fast & Lightweight</h3>
+                        <p>Built for speed with minimal overhead, ensuring your VS Code remains responsive.</p>
+                    </div>
                 </div>
             </div>
-            <div class="requirements">
-                <h3>Requirements</h3>
-                <ul>
-                    <li>Visual Studio Code 1.85.0 or higher</li>
-                    <li>Internet access for fetching icon metadata</li>
-                </ul>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Team/About Section -->
-    <section class="about">
-        <div class="container">
-            <h2 class="section-title">About</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>LobeHub Icon Helper was created to streamline the developer workflow when working with LobeHub's comprehensive icon library. Built with performance and usability in mind, this extension eliminates the friction between finding the perfect icon and implementing it in your project.</p>
-                    <p>Developed by <strong>Santhosh Sharuk</strong>, this extension represents a commitment to improving developer productivity and user experience in the VS Code ecosystem.</p>
-                </div>
-                <div class="about-links">
-                    <a href="https://github.com/santhoshsharuk/lobehub-icon-helper" class="btn btn-outline">View on GitHub</a>
-                    <a href="https://github.com/santhoshsharuk/lobehub-icon-helper/issues" class="btn btn-outline">Report Issues</a>
+        <!-- How It Works Demo -->
+        <section class="how-it-works">
+            <div class="container">
+                <h2 class="section-title">How It Works</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Search</h3>
+                        <p>Open VS Code command palette and search for "Search LobeHub Icon"</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Browse</h3>
+                        <p>Enter icon names separated by commas to load and preview multiple icons</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Insert</h3>
+                        <p>Double-click to save icons or drag them directly into your code</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Coming Soon/Roadmap -->
-    <section class="roadmap">
-        <div class="container">
-            <h2 class="section-title">Coming Soon</h2>
-            <div class="roadmap-items">
-                <div class="roadmap-item">
-                    <div class="roadmap-status planned">Planned</div>
-                    <h3>Custom Icon Collections</h3>
-                    <p>Support for custom icon libraries beyond LobeHub</p>
-                </div>
-                <div class="roadmap-item">
-                    <div class="roadmap-status planned">Planned</div>
-                    <h3>Advanced Search Filters</h3>
-                    <p>Filter icons by category, style, and usage patterns</p>
-                </div>
-                <div class="roadmap-item">
-                    <div class="roadmap-status planned">Planned</div>
-                    <h3>Icon Customization</h3>
-                    <p>Modify colors, sizes, and properties before insertion</p>
-                </div>
-                <div class="roadmap-item">
-                    <div class="roadmap-status planned">Planned</div>
-                    <h3>Team Libraries</h3>
-                    <p>Share curated icon collections with your team</p>
+        <!-- Screenshots/Preview Gallery -->
+        <section class="gallery">
+            <div class="container">
+                <h2 class="section-title">Extension in Action</h2>
+                <div class="gallery-grid">
+                    <div class="gallery-item"><div class="screenshot-placeholder"><span>Command Palette Integration</span></div></div>
+                    <div class="gallery-item"><div class="screenshot-placeholder"><span>Icon Gallery View</span></div></div>
+                    <div class="gallery-item"><div class="screenshot-placeholder"><span>Preview Panel</span></div></div>
+                    <div class="gallery-item"><div class="screenshot-placeholder"><span>Direct Insertion</span></div></div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- Installation Instructions -->
+        <section id="installation" class="installation">
+            <div class="container">
+                <h2 class="section-title">Installation</h2>
+                <div class="install-methods">
+                    <div class="install-card">
+                        <h3>VS Code Marketplace</h3>
+                        <p>Install directly from the VS Code Extensions view.</p>
+                        <code>ext install santhoshsharuk.lobehub-icon-helper</code>
+                        <a href="vscode:extension/santhoshsharuk.lobehub-icon-helper" class="btn btn-primary">Install</a>
+                    </div>
+                    <div class="install-card">
+                        <h3>Manual Installation</h3>
+                        <p>Download and install the .vsix file manually.</p>
+                        <ol>
+                            <li>Download the latest release</li>
+                            <li>Open VS Code & Run "Install from VSIX..."</li>
+                            <li>Select the downloaded file</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about">
+            <div class="container">
+                <h2 class="section-title">About</h2>
+                <div class="about-content">
+                    <p style="text-align: center; color: var(--text-muted); line-height: 1.7;">LobeHub Icon Helper was created to streamline the developer workflow when working with LobeHub's comprehensive icon library. Built with performance and usability in mind, this extension eliminates the friction between finding the perfect icon and implementing it in your project. Developed by <strong>Santhosh Sharuk</strong>, this extension represents a commitment to improving developer productivity in the VS Code ecosystem.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coming Soon/Roadmap -->
+        <section class="roadmap">
+            <div class="container">
+                <h2 class="section-title">Coming Soon</h2>
+                <div class="roadmap-items">
+                    <div class="roadmap-item">
+                        <div class="roadmap-status planned">Planned</div>
+                        <h3>Custom Icon Collections</h3>
+                        <p>Support for custom icon libraries beyond LobeHub</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-status planned">Planned</div>
+                        <h3>Advanced Search Filters</h3>
+                        <p>Filter icons by category, style, and usage patterns</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-status planned">Planned</div>
+                        <h3>Icon Customization</h3>
+                        <p>Modify colors, sizes, and properties before insertion</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
@@ -233,22 +477,21 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>LobeHub Icon Helper</h4>
-                    <p>Streamlining icon workflows for VS Code developers</p>
+                    <p>Streamlining icon workflows for VS Code developers.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul>
-                        <li><a href="https://github.com/santhoshsharuk/lobehub-icon-helper">GitHub Repository</a></li>
-                        <li><a href="https://marketplace.visualstudio.com/items?itemName=santhoshsharuk.lobehub-icon-helper">VS Code Marketplace</a></li>
-                        <li><a href="https://github.com/lobehub/icons">LobeHub Icons</a></li>
+                        <li><a href="https://github.com/santhoshsharuk/lobehub-icon-helper" target="_blank">GitHub Repository</a></li>
+                        <li><a href="https://marketplace.visualstudio.com/items?itemName=santhoshsharuk.lobehub-icon-helper" target="_blank">VS Code Marketplace</a></li>
+                        <li><a href="https://github.com/lobehub/icons" target="_blank">LobeHub Icons</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Support</h4>
                     <ul>
-                        <li><a href="https://github.com/santhoshsharuk/lobehub-icon-helper/issues">Report Issues</a></li>
-                        <li><a href="https://github.com/santhoshsharuk/lobehub-icon-helper/discussions">Discussions</a></li>
-                        <li><a href="#installation">Installation Guide</a></li>
+                        <li><a href="https://github.com/santhoshsharuk/lobehub-icon-helper/issues" target="_blank">Report an Issue</a></li>
+                        <li><a href="https://github.com/santhoshsharuk/lobehub-icon-helper/discussions" target="_blank">Discussions</a></li>
                     </ul>
                 </div>
             </div>
@@ -257,5 +500,45 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- Hero Headline Animation ---
+            const headlineText = "LobeHub Icon Helper";
+            const headline = document.querySelector('.hero-title');
+            headline.innerHTML = ''; // Clear existing content
+
+            headlineText.split('').forEach((char, index) => {
+                const span = document.createElement('span');
+                span.innerHTML = char === ' ' ? '&nbsp;' : char;
+                
+                const randomDelay = Math.random() * 0.5 + 0.2;
+                const animationDelay = (index * 0.05) + randomDelay;
+                span.style.animationDelay = `${animationDelay}s`;
+                
+                const x = Math.random() * 100 - 50;
+                const y = Math.random() * 100 - 50;
+                span.style.transformOrigin = `${x}% ${y}%`;
+                
+                headline.appendChild(span);
+            });
+
+            // --- Scroll Reveal Animation for Sections ---
+            const sections = document.querySelectorAll('section');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+
 </body>
 </html>
